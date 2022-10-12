@@ -1,50 +1,53 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SMStore.Service.Repositories;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using SMStore.Entities;
-using Microsoft.EntityFrameworkCore;
+using SMStore.Service.Repositories;
+using SMStore.WebUI.Utils;
 
 namespace SMStore.WebUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class AppUsersController : Controller
+    public class CategoriesController : Controller
     {
-        private readonly IRepository<AppUser> _repository; // CRUD işlemleri için gerekli interface
+        private readonly IRepository<Category> _repository;
 
-        public AppUsersController(IRepository<AppUser> repository)
+        public CategoriesController(IRepository<Category> repository)
         {
             _repository = repository;
         }
 
-        // GET: AppUsersController
-        public async Task<ActionResult> IndexAsync()
+        // GET: CategoriesController
+        public async Task<ActionResult> Index()
         {
             var model = await _repository.GetAllAsync();
             return View(model);
-
         }
 
-        // GET: AppUsersController/Details/5
+        // GET: CategoriesController/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: AppUsersController/Create
-        public ActionResult Create()
+        // GET: CategoriesController/Create
+        public async Task<ActionResult> CreateAsync()
         {
+            var liste = await _repository.GetAllAsync();
+            ViewBag.ParentId = new SelectList(liste, "Id", "Name");
             return View();
         }
 
-        // POST: AppUsersController/Create
+        // POST: CategoriesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(AppUser entity)
+        public async Task<ActionResult> CreateAsync(Category entity, IFormFile? Image)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    if (Image is not null) entity.Image = await FileHelper.FileLoaderAsync(Image);
                     await _repository.AddAsync(entity);
                     await _repository.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -53,28 +56,31 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
                 {
                     ModelState.AddModelError("", "Hata Oluştu!");
                 }
-
             }
-            return View();
+            var liste = await _repository.GetAllAsync();
+            ViewBag.ParentId = new SelectList(liste, "Id", "Name");
+            return View(entity);
         }
-     
-        // GET: AppUsersController/Edit/5
+
+        // GET: CategoriesController/Edit/5
         public async Task<ActionResult> EditAsync(int id)
         {
             var model = await _repository.FindAsync(id);
+            var liste = await _repository.GetAllAsync();
+            ViewBag.ParentId = new SelectList(liste, "Id", "Name");
             return View(model);
-
         }
 
-        // POST: AppUsersController/Edit/5
+        // POST: CategoriesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditAsync(int id, AppUser entity)
+        public async Task<ActionResult> EditAsync(int id, Category entity, IFormFile? Image)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    if (Image is not null) entity.Image = await FileHelper.FileLoaderAsync(Image);
                     _repository.Update(entity);
                     await _repository.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -83,22 +89,23 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
                 {
                     ModelState.AddModelError("", "Hata Oluştu!");
                 }
-
             }
-            return View();
+            var liste = await _repository.GetAllAsync();
+            ViewBag.ParentId = new SelectList(liste, "Id", "Name");
+            return View(entity);
         }
 
-        // GET: AppUsersController/Delete/5
+        // GET: CategoriesController/Delete/5
         public async Task<ActionResult> DeleteAsync(int id)
         {
             var model = await _repository.FindAsync(id);
             return View(model);
         }
 
-        // POST: AppUsersController/Delete/5
+        // POST: CategoriesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteAsync(int id, AppUser entity)
+        public async Task<ActionResult> DeleteAsync(int id, Category entity)
         {
             try
             {

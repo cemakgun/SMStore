@@ -1,50 +1,50 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SMStore.Service.Repositories;
 using SMStore.Entities;
-using Microsoft.EntityFrameworkCore;
+using SMStore.Service.Repositories;
+using SMStore.WebUI.Utils;
 
 namespace SMStore.WebUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class AppUsersController : Controller
+    public class BrandsController : Controller
     {
-        private readonly IRepository<AppUser> _repository; // CRUD işlemleri için gerekli interface
+        private readonly IRepository<Brand> _repository;
 
-        public AppUsersController(IRepository<AppUser> repository)
+        public BrandsController(IRepository<Brand> repository)
         {
             _repository = repository;
         }
 
-        // GET: AppUsersController
-        public async Task<ActionResult> IndexAsync()
+        // GET: BrandsController
+        public async Task<ActionResult> Index()
         {
             var model = await _repository.GetAllAsync();
             return View(model);
-
         }
 
-        // GET: AppUsersController/Details/5
+        // GET: BrandsController/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: AppUsersController/Create
+        // GET: BrandsController/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: AppUsersController/Create
+        // POST: BrandsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(AppUser entity)
+        public async Task<ActionResult> CreateAsync(Brand entity, IFormFile? Image)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    if (Image is not null) entity.Image = await FileHelper.FileLoaderAsync(Image); // FileLoaderAsync metodu bizim yazdığımız resim yükleme metodu
                     await _repository.AddAsync(entity);
                     await _repository.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -53,28 +53,27 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
                 {
                     ModelState.AddModelError("", "Hata Oluştu!");
                 }
-
             }
-            return View();
+            return View(entity);
         }
-     
-        // GET: AppUsersController/Edit/5
+
+        // GET: BrandsController/Edit/5
         public async Task<ActionResult> EditAsync(int id)
         {
             var model = await _repository.FindAsync(id);
             return View(model);
-
         }
 
-        // POST: AppUsersController/Edit/5
+        // POST: BrandsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditAsync(int id, AppUser entity)
+        public async Task<ActionResult> EditAsync(int id, Brand entity, IFormFile? Image)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    if (Image is not null) entity.Image = await FileHelper.FileLoaderAsync(Image);
                     _repository.Update(entity);
                     await _repository.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -83,22 +82,21 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
                 {
                     ModelState.AddModelError("", "Hata Oluştu!");
                 }
-
             }
-            return View();
+            return View(entity);
         }
 
-        // GET: AppUsersController/Delete/5
+        // GET: BrandsController/Delete/5
         public async Task<ActionResult> DeleteAsync(int id)
         {
             var model = await _repository.FindAsync(id);
             return View(model);
         }
 
-        // POST: AppUsersController/Delete/5
+        // POST: BrandsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteAsync(int id, AppUser entity)
+        public async Task<ActionResult> DeleteAsync(int id, Brand entity)
         {
             try
             {
