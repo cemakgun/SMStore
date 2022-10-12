@@ -67,12 +67,13 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
         // POST: BrandsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditAsync(int id, Brand entity, IFormFile? Image)
+        public async Task<ActionResult> EditAsync(int id, Brand entity, IFormFile? Image, bool? resmiSil)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    if (resmiSil is true) entity.Image = string.Empty;
                     if (Image is not null) entity.Image = await FileHelper.FileLoaderAsync(Image);
                     _repository.Update(entity);
                     await _repository.SaveChangesAsync();

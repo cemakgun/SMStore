@@ -1,10 +1,10 @@
-﻿@model IEnumerable<SMStore.Entities.Category>
+﻿@model IEnumerable<SMStore.Entities.News>
 
 @{
-    ViewData["Title"] = "Kategoriler";
+    ViewData["Title"] = "Haberler Listesi";
 }
 
-<h1>Kategoriler</h1>
+<h1>Haberler Listesi</h1>
 
 <p>
     <a asp-action="Create" class="btn btn-outline-primary">Yeni Ekle</a>
@@ -24,15 +24,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.IsActive)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsTopMenu)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ParentId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderNo)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -46,23 +37,14 @@
                 @Html.DisplayFor(modelItem => item.CreateDate)
             </td>
             <td>
-                    <img src="/Img/@Html.DisplayFor(modelItem => item.Image)" alt="" height="50" title="@item.Image" />
+                    <img src="/Img/@item.Image" alt="" height="40" />
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsActive)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IsTopMenu)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ParentId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderNo)
-            </td>
-            <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Düzenle</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Sil</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Düzenle</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Sil</a>
             </td>
         </tr>
 }
