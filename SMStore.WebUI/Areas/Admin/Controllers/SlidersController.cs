@@ -1,53 +1,51 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using SMStore.Entities;
 using SMStore.Service.Repositories;
 using SMStore.WebUI.Utils;
 
+
 namespace SMStore.WebUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class CategoriesController : Controller
+    public class SlidersController : Controller
     {
-        private readonly IRepository<Category> _repository;
+        private readonly IRepository<Slider> _repository;
 
-        public CategoriesController(IRepository<Category> repository)
+        public SlidersController(IRepository<Slider> repository)
         {
             _repository = repository;
         }
 
-        // GET: CategoriesController
+        // GET: SlidersController
         public async Task<ActionResult> Index()
         {
             var model = await _repository.GetAllAsync();
             return View(model);
         }
 
-        // GET: CategoriesController/Details/5
+        // GET: SlidersController/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: CategoriesController/Create
-        public async Task<ActionResult> CreateAsync() //
+        // GET: SlidersController/Create
+        public IActionResult Create()
         {
-            var liste = await _repository.GetAllAsync();
-            ViewBag.ParentId = new SelectList(liste, "Id", "Name");
             return View();
         }
 
-        // POST: CategoriesController/Create
+        // POST: SlidersController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateAsync(Category entity, IFormFile? Image)
+        public async Task<IActionResult> CreateAsync(Slider entity, IFormFile? Image)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    if (Image is not null) entity.Image = await FileHelper.FileLoaderAsync(Image);
+                    if (Image is not null) entity.Image = await FileHelper.FileLoaderAsync(Image); // FileLoaderAsync metodu bizim yazdığımız resim yükleme metodu
                     await _repository.AddAsync(entity);
                     await _repository.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -57,25 +55,20 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
                     ModelState.AddModelError("", "Hata Oluştu!");
                 }
             }
-            var liste = await _repository.GetAllAsync();
-            ViewBag.ParentId = new SelectList(liste, "Id", "Name");
             return View(entity);
         }
 
-        // GET: CategoriesController/Edit/5
-        public async Task<ActionResult> EditAsync(int? id)
+        // GET: SlidersController/Edit/5
+        public async Task<IActionResult> EditAsync(int id)
         {
-            if (id == null) return BadRequest(); // adres çubuğundan id gönderilmemişsse bad request ile geçersiz istek hatası dön
-            var model = await _repository.FindAsync(id.Value); // parametrede int? id koduyla id yi boş gelebilir yaptığımız için .value ile değerini alıyoruz.
-            var liste = await _repository.GetAllAsync();
-            ViewBag.ParentId = new SelectList(liste, "Id", "Name");
-            return View(model);
+            var model = await _repository.FindAsync(id);
+            return View(model); ;
         }
 
-        // POST: CategoriesController/Edit/5
+        // POST: SlidersController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditAsync(int id, Category entity, IFormFile? Image, bool? resmiSil)
+        public async Task<ActionResult> EditAsync(int id, Slider entity, IFormFile? Image, bool? resmiSil)
         {
             if (ModelState.IsValid)
             {
@@ -92,27 +85,26 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
                     ModelState.AddModelError("", "Hata Oluştu!");
                 }
             }
-            var liste = await _repository.GetAllAsync();
-            ViewBag.ParentId = new SelectList(liste, "Id", "Name");
             return View(entity);
         }
 
-        // GET: CategoriesController/Delete/5
+        // GET: BrandsController/Delete/5
         public async Task<ActionResult> DeleteAsync(int id)
         {
             var model = await _repository.FindAsync(id);
             return View(model);
         }
 
-        // POST: CategoriesController/Delete/5
+        // POST: BrandsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteAsync(int id, Category entity)
+        public ActionResult DeleteAsync(int id, Slider entity)
         {
             try
             {
+                FileHelper.FileRemover(entity.Image);
                 _repository.Delete(entity);
-                await _repository.SaveChangesAsync();
+                _repository.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch

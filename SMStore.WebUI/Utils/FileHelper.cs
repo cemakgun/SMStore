@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using Microsoft.EntityFrameworkCore.Diagnostics;
+using System.Drawing;
 
 namespace SMStore.WebUI.Utils
 {
@@ -17,6 +18,18 @@ namespace SMStore.WebUI.Utils
             await formFile.CopyToAsync(stream); // yukardaki ayarlarla dosyamızı asenkron bir şekilde sunucuya yükledik.
 
             return fileName; // bu metodun kullanılacağı yere yüklenen dosya adını geri gönderdik
+        }
+        public static bool FileRemover(string fileName, string filePath = "/wwwroot/Img/")
+        {
+          
+            string directory = Directory.GetCurrentDirectory() + filePath + fileName;
+
+            if (File.Exists(directory)) // File.Exists metodu C# ta var olan ve kendisine verilen adresteki dosya var mi yok mu kontrol ediyor
+            {
+                    File.Delete(directory); // file.delete metodu verilen adresteki dosyayı sunucudan siler.
+                    return true;
+            }
+            return false;
         }
 
     }
