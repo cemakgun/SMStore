@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SMStore.Entities;
 using SMStore.Service.Repositories;
@@ -7,7 +8,7 @@ using SMStore.WebUI.Utils;
 
 namespace SMStore.WebUI.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize]
     public class SlidersController : Controller
     {
         private readonly IRepository<Slider> _repository;
@@ -39,7 +40,7 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
         // POST: SlidersController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateAsync(Slider entity, IFormFile? Image)
+        public async Task<ActionResult> CreateAsync(Slider entity, IFormFile? Image)
         {
             if (ModelState.IsValid)
             {
@@ -59,7 +60,7 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
         }
 
         // GET: SlidersController/Edit/5
-        public async Task<IActionResult> EditAsync(int id)
+        public async Task<ActionResult> EditAsync(int id)
         {
             var model = await _repository.FindAsync(id);
             return View(model); ;
@@ -98,7 +99,7 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
         // POST: BrandsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteAsync(int id, Slider entity)
+        public ActionResult Delete(int id, Slider entity)
         {
             try
             {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SMStore.Entities;
@@ -7,7 +8,7 @@ using SMStore.WebUI.Utils;
 
 namespace SMStore.WebUI.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize]
     public class ProductsController : Controller
     {
 
@@ -36,7 +37,7 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
         }
 
         // GET: ProductsController/Create
-        public async Task<IActionResult> CreateAsync()
+        public async Task<ActionResult> CreateAsync()
         {
             var kategoriler = await _repositoryCategory.GetAllAsync();
             ViewBag.CategoryId = new SelectList(kategoriler, "Id", "Name"); // ilk parametre arkada tuttuğu değer, ikinci değer önyüz deki ismi
@@ -48,7 +49,7 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
         // POST: ProductsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateAsync(Product entity, IFormFile? Image)
+        public async Task<ActionResult> CreateAsync(Product entity, IFormFile? Image)
         {
             if (ModelState.IsValid)
             {
@@ -85,7 +86,7 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
         // POST: ProductsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditAsync(int id, Product entity, IFormFile? Image, bool? resmiSil)
+        public async Task<ActionResult> EditAsync(int id, Product entity, IFormFile? Image, bool? resmiSil)
         {
             if (ModelState.IsValid)
             {
@@ -110,7 +111,7 @@ namespace SMStore.WebUI.Areas.Admin.Controllers
         }
 
         // GET: ProductsController/Delete/5
-        public async Task<IActionResult> DeleteAsync(int id)
+        public async Task<ActionResult> DeleteAsync(int id)
         {
             var model = await _repository.FindAsync(id);
             return View(model);

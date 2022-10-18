@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SMStore.WebUI.Areas.Admin.Controllers
 {
     public class MainController : Controller
     {
-        [Area("Admin")]
+        [Area("Admin"), Authorize]
         public IActionResult Index()
         {
             return View();

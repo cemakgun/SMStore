@@ -1,4 +1,5 @@
-﻿
+﻿@model AdminLoginViewModel
+
 @{
     Layout = null;
 }
@@ -10,30 +11,30 @@
     <meta name="viewport" content="width=device-width" />
     <title>Admin Login</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/signing.css" />
+    <link rel="stylesheet" href="~/css/signin.css" />
 </head>
 <body class="text-center">
 
     <main class="form-signin w-100 m-auto">
-        <form data-dashlane-rid="a44c312223e45cbf" data-form-type="login">
-            <img class="mb-4" src="/docs/5.2/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+        <form asp-action="Index">
+            <img class="mb-4" src="/img/lock-300x300.png" alt="" width="72" height="72">
             <h1 class="h3 mb-3 fw-normal">Admin Login</h1>
-
+            <div asp-validation-summary="All" class="text danger"></div>
             <div class="form-floating">
-                <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" data-dashlane-rid="52dc4401825f4c5b" data-kwimpalastatus="alive" data-kwimpalaid="1666036396640-0" data-form-type="email">
+                <input asp-for="Email" type="email "class="form-control" id="floatingInput" placeholder="name@example.com">
                 <label for="floatingInput">Email</label>
             </div>
             <div class="form-floating">
-                <input type="password" class="form-control" id="floatingPassword" placeholder="Password" data-dashlane-rid="f9b392eed8016a3f" data-kwimpalastatus="alive" data-kwimpalaid="1666036396640-1" data-form-type="password">
+                <input asp-for="Password" type="password" class="form-control" id="floatingPassword" placeholder="Şifre">
                 <label for="floatingPassword">Şifre</label>
             </div>
 
             <div class="checkbox mb-3">
-                <label data-dashlane-label="true">
-                    <input type="checkbox" value="remember-me" data-dashlane-rid="11c1f7cfac2f8b0e" data-form-type="consent,rememberme"> Beni Hatırla
+                <label>
+                    <input type="checkbox" value="remember-me"> Beni Hatırla
                 </label>
             </div>
-            <button class="w-100 btn btn-lg btn-primary" type="submit" data-dashlane-rid="9e4b1fbde9b9f854" data-kwimpalastatus="dead" data-dashlane-label="true" data-form-type="action,login">Sign in</button>
+            <button class="w-100 btn btn-lg btn-primary" type="submit">Giriş</button>
             <p class="mt-5 mb-3 text-muted">© 2017–2022</p>
         </form>
     </main>

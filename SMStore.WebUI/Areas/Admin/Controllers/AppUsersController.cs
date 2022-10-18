@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using SMStore.Service.Repositories;
 using SMStore.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SMStore.WebUI.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize]
     public class AppUsersController : Controller
     {
         private readonly IRepository<AppUser> _repository; // CRUD işlemleri için gerekli interface

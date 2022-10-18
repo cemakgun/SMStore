@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SMStore.Entities;
@@ -7,7 +8,7 @@ using SMStore.WebUI.Utils;
 
 namespace SMStore.WebUI.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize]
     public class ContactsController : Controller
     {
         private readonly IRepository<Contact> _repository;
