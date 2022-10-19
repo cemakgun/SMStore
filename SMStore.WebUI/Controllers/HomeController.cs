@@ -10,16 +10,23 @@ namespace SMStore.WebUI.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IRepository<Contact> _repositoryContact;
+        private readonly IRepository<Slider> _repositorySlider;
+        private readonly IRepository<Product> _repositoryProduct;
 
-        public HomeController(ILogger<HomeController> logger, IRepository<Contact> repositoryContact)
+        public HomeController(ILogger<HomeController> logger, IRepository<Contact> repositoryContact, IRepository<Slider> repositorySlider, IRepository<Product> repositoryProduct)
         {
             _logger = logger;
             _repositoryContact = repositoryContact;
+            _repositorySlider = repositorySlider;
+            _repositoryProduct = repositoryProduct;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
-            return View();
+            var model = new HomePageViewModel();
+            model.Sliders = await _repositorySlider.GetAllAsync();
+            model.Products = await _repositoryProduct.GetAllAsync(p => p.IsActive && p.IsHome); // buraya konan şart veriyi bir kere database den çeker örnek 7000 ürün var o zaman hepsi gelir filtre koyduk.
+            return View(model);
         }
 
         public IActionResult Privacy()
@@ -27,24 +34,19 @@ namespace SMStore.WebUI.Controllers
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
         [Route("AccessDenied")]
         public IActionResult AccessDenied()
         {
-            
             return View();
         }
+
         [Route("iletisim")]
         public IActionResult ContactUs()
         {
-
             return View();
         }
-        [Route("Iletisim"), HttpPost]
+
+        [Route("iletisim"), HttpPost]
         public async Task<IActionResult> ContactUsAsync(Contact contact)
         {
             if (ModelState.IsValid)
@@ -55,7 +57,7 @@ namespace SMStore.WebUI.Controllers
                     var sonuc = await _repositoryContact.SaveChangesAsync();
                     if (sonuc > 0)
                     {
-                        TempData["mesaj"] = "<div class='alert alert-success'>Mesajınız İletilmiştir.. Teşeşkür Ederiz...</div>";
+                        TempData["mesaj"] = "<div class='alert alert-success'>Mesajınız İletilmiştir.. Teşekkür Ederiz...</div>";
                         return RedirectToAction(nameof(ContactUs));
                     }
                 }
@@ -64,9 +66,14 @@ namespace SMStore.WebUI.Controllers
                     ModelState.AddModelError("", "Hata Oluştu!");
                 }
             }
+
             return View();
         }
 
-
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
     }
 }
