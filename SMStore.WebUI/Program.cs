@@ -15,13 +15,18 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<DatabaseContext>(); // DbContext i ekliyoruz.
 
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>)); // Kendi yazdığımız repository servisini burada uygulamaya ekliyoruz. Burada eklemeden projede kullanmaya kalkarsak hata alırız!!.
+builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>)); // Kendi yazdığımız repository servisini burada uygulamaya ekliyoruz. Burada eklemeden projede kullanmaya kalkarsak hata alırız!!.
 
 // .Net Core ile birlikte 3 farklı Dependcy Injection yöntemi var sayılan olarak kullanmamıza sunulmuştur.
 // Dependcy Injection Yöntemleri :
 // 1 - AddSingleton : Bu yöntemi kullnırsak oluşturmak istediğimiz nesneden 1 tane oluşturulur ve her istediğimizde bu nesne bize gönderilir.
 // 2 - AddTransient : Oluşturulması istenenden nesneden her istek için yeni 1 tane oluşturulur.
 // 3 - AddScoped    : Oluşturulması istenenden nesne için gelen istediği bakılarak nesne daha önceden oluşturulmuşsa onu oluşturulmamışsa yeni bir tane oluşturup onu gönderir.
+
+
+builder.Services.AddTransient(typeof(ICategoryRepository), typeof(CategoryRepository));
+// Uygulamaya ICategoryRepository i kullanmak için istek yapılırsa CategoryRepository nesnesinden bir örneği kullanılmak üzere gönder.
+// builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 // FLuentValidation ile class i kontrol etmek için
 builder.Services.AddScoped<IValidator<AppUser>, AppUserValidator>();

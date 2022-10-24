@@ -18,7 +18,7 @@ namespace SMStore.Entities
         public virtual ICollection<Product>? Products { get; set; } // Brand ile Product arasında 1 e çok ilişki kurduk.
         public Brand()
         {
-            Products = new List<Product>();
+            Products = new List<Product>(); //  null reference dan kurtulmak için
         }
     }
 }

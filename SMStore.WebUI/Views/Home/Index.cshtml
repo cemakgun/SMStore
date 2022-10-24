@@ -10,18 +10,9 @@
 </div>
 
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3"">
-    @foreach (var item in Model.Products) {
-    <div class="col">
-        <div class="card shadow-sm">
-            <a href="/Products/Detail/@item.Id">
-                <img src="/Img/@item.Image" class="bd-placeholder-img card-img-top" alt="@item.Name" width="100%" height="225" />
-            </a>
-            <div class="card-body">
-                <p class="card-text">
-                    @item.Name
-                </p>
-            </div>
-        </div>
-    </div>
+    @foreach (var item in Model.Products) 
+    {
+        @await Html.PartialAsync("_ProductPartial", item)
+
     }
 </div>
