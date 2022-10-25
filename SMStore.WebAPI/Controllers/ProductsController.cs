@@ -8,59 +8,57 @@ namespace SMStore.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AppUsersController : ControllerBase
+    public class ProductsController : ControllerBase
     {
-        private readonly IRepository<AppUser> _repository;
+        private readonly IRepository<Product> _repository;
 
-        public AppUsersController(IRepository<AppUser> repository)
+        public ProductsController(IRepository<Product> repository)
         {
             _repository = repository;
         }
-
-        // GET: api/<AppUsersController>
+     
         [HttpGet]
-        public async Task<IEnumerable<AppUser>> GetAsync()
+        public async Task<IEnumerable<Product>> GetAsync()
         {
             return await _repository.GetAllAsync();
         }
 
-        // GET api/<AppUsersController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<AppUser>> GetAsync(int id) // like findAsync
+        public async Task<ActionResult<Product>> GetAsync(int id) // like findAsync
         {
             var data = await _repository.FindAsync(id);
             if (data is null) return NotFound();
             return data;
         }
-
-        // POST api/<AppUsersController>  // kayıt ekleme işlemi
+    
         [HttpPost]
-        public async Task<ActionResult<AppUser>> PostAsync([FromBody] AppUser appUser)
+        public async Task<ActionResult<Product>> PostAsync([FromBody] Product entity)
         {
-            await _repository.AddAsync(appUser);
+            await _repository.AddAsync(entity);
             await _repository.SaveChangesAsync();
 
-            return CreatedAtAction("Get", new { id = appUser.Id }, appUser); // ekleme işleminden sonra geriye eklenen kaydı döndürür.
+            return CreatedAtAction("Get", new { id = entity.Id }, entity); // ekleme işleminden sonra geriye eklenen kaydı döndürür.
         }
 
-        // PUT api/<AppUsersController>/5
+       
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, AppUser appUser)
+        public async Task<ActionResult> Put(int id, Product entity)
         {
-            _repository.Update(appUser);
+            _repository.Update(entity);
             await _repository.SaveChangesAsync();
             return NoContent(); // Api kullanırken güncelleme işleminden sonra no content dönüş türü kullanılır.
-            
+
         }
 
-        // DELETE api/<AppUsersController>/5
+   
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            var appUser = _repository.Find(id);
-            _repository.Delete(appUser);
+            var data = _repository.Find(id);
+            _repository.Delete(data);
             await _repository.SaveChangesAsync();
             return Ok(); // Geriye silme başarılı mesajı döndür
         }
+
     }
 }
