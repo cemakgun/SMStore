@@ -1,79 +1,54 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using SMStore.Entities;
+using SMStore.WebUIAPIUsing.Utils;
 
 namespace SMStore.WebUIAPIUsing.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class AppUsersController : Controller
+    public class CategoriesController : Controller
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiAdres;
 
-        public AppUsersController(HttpClient httpClient)
+        public CategoriesController(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _apiAdres = "https://localhost:7140/api/AppUsers";
+            _apiAdres = "https://localhost:7140/Api/Categories";
         }
 
-        // GET: AppUsersController
-        public async Task<IActionResult> IndexAsync()
+        // GET: CategoriesController
+        public async Task<ActionResult> IndexAsync()
         {
-            var model = await _httpClient.GetFromJsonAsync<List<AppUser>>(_apiAdres); // _httpClient nesnesi Api ye istekleri göndermek için kullanılır. GetFromJsonAsync metodu ise _apiAdres deki api mize yaptığı istek sonucu gelen json data yı List<AppUser> yani app user listesine dönüştürü ve view a gönderir.
+            var model = await _httpClient.GetFromJsonAsync<List<Category>>(_apiAdres);
             return View(model);
         }
 
-        // GET: AppUsersController/Details/5
+        // GET: CategoriesController/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: AppUsersController/Create
-        public ActionResult Create()
+        // GET: CategoriesController/Create
+        public async Task<ActionResult> CreateAsync()
         {
+            var liste = await _httpClient.GetFromJsonAsync<List<Category>>(_apiAdres);
+            ViewBag.ParentId = new SelectList(liste, "Id", "Name");
             return View();
         }
 
-        // POST: AppUsersController/Create
+        // POST: CategoriesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateAsync(AppUser appUser)
+        public async Task<ActionResult> CreateAsync(Category entity, IFormFile? Image)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var response = await _httpClient.PostAsJsonAsync(_apiAdres, appUser); // _httpClient nesnesi içerisindeki PostAsJsonAsync metodunu kullanarak apimize post isteği gönderiyoruz
-                    if (response.IsSuccessStatusCode) // eğer api den başarılı işlem kodu döndüyse
-                        return RedirectToAction(nameof(Index)); // sayfayı anasayfaya yönlendir
-                    else ModelState.AddModelError("", "Kayıt Başarısız!");
-                }
-                catch
-                {
-                    ModelState.AddModelError("", "Hata Oluştu!");
-                }
-            }
-            return View();
-        }
-
-        // GET: AppUsersController/Edit/5
-        public async Task<ActionResult> EditAsync(int id)
-        {
-            var model = await _httpClient.GetFromJsonAsync<AppUser>(_apiAdres + "/" + id);
-
-            return View(model);
-        }
-
-        // POST: AppUsersController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditAsync(int id, AppUser appUser)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var response = await _httpClient.PutAsJsonAsync(_apiAdres + "/" + id, appUser);
+                    if (Image is not null) entity.Image = await FileHelper.FileLoaderAsync(Image);
+                    var response = await _httpClient.PostAsJsonAsync(_apiAdres, entity);
                     if (response.IsSuccessStatusCode)
                         return RedirectToAction(nameof(Index));
                     else ModelState.AddModelError("", "Kayıt Başarısız!");
@@ -86,18 +61,49 @@ namespace SMStore.WebUIAPIUsing.Areas.Admin.Controllers
             return View();
         }
 
-        // GET: AppUsersController/Delete/5
-        public async Task<ActionResult> DeleteAsync(int id)
+        // GET: CategoriesController/Edit/5
+        public async Task<IActionResult> EditAsync(int id)
         {
-            var model = await _httpClient.GetFromJsonAsync<AppUser>(_apiAdres + "/" + id);
-
+            var model = await _httpClient.GetFromJsonAsync<Category>(_apiAdres + "/" + id);
+            var liste = await _httpClient.GetFromJsonAsync<List<Category>>(_apiAdres);
+            ViewBag.ParentId = new SelectList(liste, "Id", "Name");
             return View(model);
         }
 
-        // POST: AppUsersController/Delete/5
+        // POST: CategoriesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteAsync(int id, AppUser appUser)
+        public async Task<ActionResult> EditAsync(int id, Category entity, IFormFile? Image)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (Image is not null) entity.Image = await FileHelper.FileLoaderAsync(Image);
+                    var response = await _httpClient.PutAsJsonAsync(_apiAdres + "/" + id, entity);
+                    if (response.IsSuccessStatusCode)
+                        return RedirectToAction(nameof(Index));
+                    else ModelState.AddModelError("", "Kayıt Başarısız!");
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "Hata Oluştu!");
+                }
+            }
+            return View();
+        }
+
+        // GET: CategoriesController/Delete/5
+        public async Task<ActionResult> DeleteAsync(int id)
+        {
+            var model = await _httpClient.GetFromJsonAsync<Category>(_apiAdres + "/" + id);
+            return View(model);
+        }
+
+        // POST: CategoriesController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAsync(int id, IFormCollection collection)
         {
             try
             {

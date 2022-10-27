@@ -1,79 +1,50 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using SMStore.Entities;
 
 namespace SMStore.WebUIAPIUsing.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class AppUsersController : Controller
+    public class ContactsController : Controller
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiAdres;
 
-        public AppUsersController(HttpClient httpClient)
+        public ContactsController(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _apiAdres = "https://localhost:7140/api/AppUsers";
+            _apiAdres = "https://localhost:7140/Api/Contacts";
         }
 
-        // GET: AppUsersController
-        public async Task<IActionResult> IndexAsync()
+        // GET: ContactsController
+        public async Task<ActionResult> IndexAsync()
         {
-            var model = await _httpClient.GetFromJsonAsync<List<AppUser>>(_apiAdres); // _httpClient nesnesi Api ye istekleri göndermek için kullanılır. GetFromJsonAsync metodu ise _apiAdres deki api mize yaptığı istek sonucu gelen json data yı List<AppUser> yani app user listesine dönüştürü ve view a gönderir.
+            var model = await _httpClient.GetFromJsonAsync<List<Contact>>(_apiAdres);
             return View(model);
         }
 
-        // GET: AppUsersController/Details/5
+        // GET: ContactsController/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: AppUsersController/Create
+        // GET: ContactsController/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: AppUsersController/Create
+        // POST: ContactsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateAsync(AppUser appUser)
+        public async Task<ActionResult> CreateAsync(Contact entity)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var response = await _httpClient.PostAsJsonAsync(_apiAdres, appUser); // _httpClient nesnesi içerisindeki PostAsJsonAsync metodunu kullanarak apimize post isteği gönderiyoruz
-                    if (response.IsSuccessStatusCode) // eğer api den başarılı işlem kodu döndüyse
-                        return RedirectToAction(nameof(Index)); // sayfayı anasayfaya yönlendir
-                    else ModelState.AddModelError("", "Kayıt Başarısız!");
-                }
-                catch
-                {
-                    ModelState.AddModelError("", "Hata Oluştu!");
-                }
-            }
-            return View();
-        }
-
-        // GET: AppUsersController/Edit/5
-        public async Task<ActionResult> EditAsync(int id)
-        {
-            var model = await _httpClient.GetFromJsonAsync<AppUser>(_apiAdres + "/" + id);
-
-            return View(model);
-        }
-
-        // POST: AppUsersController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditAsync(int id, AppUser appUser)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var response = await _httpClient.PutAsJsonAsync(_apiAdres + "/" + id, appUser);
+                    var response = await _httpClient.PostAsJsonAsync(_apiAdres, entity);
                     if (response.IsSuccessStatusCode)
                         return RedirectToAction(nameof(Index));
                     else ModelState.AddModelError("", "Kayıt Başarısız!");
@@ -86,18 +57,48 @@ namespace SMStore.WebUIAPIUsing.Areas.Admin.Controllers
             return View();
         }
 
-        // GET: AppUsersController/Delete/5
-        public async Task<ActionResult> DeleteAsync(int id)
+        // GET: ContactsController/Edit/5
+        public async Task<ActionResult> EditAsync(int id)
         {
-            var model = await _httpClient.GetFromJsonAsync<AppUser>(_apiAdres + "/" + id);
+            var model = await _httpClient.GetFromJsonAsync<Contact>(_apiAdres + "/" + id);
 
             return View(model);
         }
 
-        // POST: AppUsersController/Delete/5
+        // POST: ContactsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteAsync(int id, AppUser appUser)
+        public async Task<ActionResult> EditAsync(int id, Contact entity)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var response = await _httpClient.PutAsJsonAsync(_apiAdres + "/" + id, entity);
+                    if (response.IsSuccessStatusCode)
+                        return RedirectToAction(nameof(Index));
+                    else ModelState.AddModelError("", "Kayıt Başarısız!");
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "Hata Oluştu!");
+                }
+            }
+            return View();
+        }
+
+        // GET: ContactsController/Delete/5
+        public async Task<ActionResult> DeleteAsync(int id)
+        {
+            var model = await _httpClient.GetFromJsonAsync<Contact>(_apiAdres + "/" + id);
+
+            return View(model);
+        }
+
+        // POST: ContactsController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAsync(int id, IFormCollection collection)
         {
             try
             {

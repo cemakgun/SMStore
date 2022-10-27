@@ -5,6 +5,7 @@ using SMStore.Entities;
 using SMStore.Service.Repositories;
 using SMStore.Service.ValidationRules;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,15 +14,13 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 builder.Services.AddHttpClient();  //Api mize istek gönderebilmek için gerekli servis!!
 
-var app = builder.Build();
-
 builder.Services.AddDbContext<DatabaseContext>(); 
 
 builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));  
 
 builder.Services.AddTransient(typeof(ICategoryRepository), typeof(CategoryRepository));
 
-builder.Services.AddScoped<IValidator<AppUser>, AppUserValidator>();
+ builder.Services.AddScoped<IValidator<AppUser>, AppUserValidator>();
 // builder.Services.AddScoped<IValidator<AdminLoginViewModel>, AdminLoginViewModelValidator>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(u =>
@@ -40,6 +39,8 @@ builder.Services.AddAuthorization(x =>
     x.AddPolicy("UserPolicy", p => p.RequireClaim("Role", "User"));
 }
 );
+
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
